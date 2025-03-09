@@ -18,7 +18,7 @@ app.post('/chat', async (req, res) => {
             messages: [{ role: 'user', content: message }]
         }, {
             headers: { 
-                'Authorization': `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`, 
+                'Authorization': `Bearer YOUR_OPENAI_API_KEY`, 
                 'Content-Type': 'application/json' 
             }
         });
