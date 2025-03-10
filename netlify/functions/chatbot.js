@@ -23,7 +23,7 @@ export async function handler(event) {
         console.log("🔍 API Response:", data); // ✅ طباعة الرد في الـ Logs
 
         // محاولة الوصول للنص المُولد
-        const botResponse = data.generated_text || (Array.isArray(data) && data[0]?.generated_text) || "لم أتمكن من فهم سؤالك.";
+        const botResponse = data.content || (Array.isArray(data) && data[0]?.generated_text) || "لم أتمكن من فهم سؤالك.";
 
         return {
             statusCode: 200,
