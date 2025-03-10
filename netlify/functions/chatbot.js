@@ -1,22 +1,22 @@
-import fetch from 'node-fetch';
-
 export async function handler(event) {
     try {
         const { message } = JSON.parse(event.body);
-        const apiKey = process.env.OPENAI_API_KEY;
 
-        if (!apiKey) {
-            throw new Error("API key is missing. Check your Netlify environment variables.");
+        if (!process.env.OPENAI_API_KEY) {
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: "API key is missing. Check your Netlify environment variables." })
+            };
         }
 
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
+                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
             },
             body: JSON.stringify({
-                model: "gpt-4",
+                model: "gpt-4",  
                 messages: [{ role: "user", content: message }]
             })
         });
@@ -30,7 +30,7 @@ export async function handler(event) {
     } catch (error) {
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "حدث خطأ أثناء الاتصال بـ OpenAI", details: error.message })
+            body: JSON.stringify({ error: "حدث خطأ أثناء الاتصال بالخادم", details: error.message })
         };
     }
 }
