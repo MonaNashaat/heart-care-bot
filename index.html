@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مساعد الرعاية الصحية</title>
+    <title>الشات بوت الذكي</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>مرحبًا بك في مساعد الرعاية الصحية</h1>
-    
-    <!-- Botpress Chatbot -->
-    <script src="https://cdn.botpress.cloud/webchat/v2.2/shareable.html?configUrl=https://files.bpcontent.cloud/2025/03/10/11/20250310110042-05GMM6X0.json"></script>
+    <h1>مرحبًا بك في الشات بوت!</h1>
+    <div id="chatbox">
+        <div id="chat-log"></div>
+        <input type="text" id="user-input" placeholder="اكتب سؤالك هنا...">
+        <button onclick="sendMessage()">إرسال</button>
+    </div>
+    <script src="app.js"></script>
 </body>
 </html>
