@@ -1,38 +1,28 @@
 export async function handler(event) {
     try {
         const { message } = JSON.parse(event.body);
+        const apiKey = process.env.HUGGINGFACE_API_KEY;
 
-        if (!process.env.OPENAI_API_KEY) {
+        if (!apiKey) {
             return {
                 statusCode: 500,
-                body: JSON.stringify({ error: "API key is missing. Check your Netlify environment variables." })
+                body: JSON.stringify({ error: "API key is missing. Check your Hugging Face environment variables." })
             };
         }
 
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        const response = await fetch("https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+                "Authorization": `Bearer ${apiKey}`
             },
-            body: JSON.stringify({
-                model: "gpt-3.5-turbo",   // بدل "gpt-4" بـ "gpt-3.5-turbo"
-                messages: [{ role: "user", content: message }]
-            })
+            body: JSON.stringify({ inputs: message })
         });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            return {
-                statusCode: response.status,
-                body: JSON.stringify({ error: `API Error: ${response.statusText}`, details: errorText })
-            };
-        }
 
         const data = await response.json();
         return {
             statusCode: 200,
-            body: JSON.stringify(data)
+            body: JSON.stringify({ content: data.generated_text })
         };
 
     } catch (error) {
