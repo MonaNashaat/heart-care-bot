@@ -1,18 +1,20 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الشات بوت الذكي</title>
+    <title>بوت الاستشارات الصحية</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>مرحبًا بك في الشات بوت!</h1>
-    <div id="chatbox">
-        <div id="chat-log"></div>
-        <input type="text" id="user-input" placeholder="اكتب سؤالك هنا...">
-        <button onclick="sendMessage()">إرسال</button>
+    <h1>بوت الاستشارات الصحية 🩺</h1>
+    <div id="chat-container">
+        <textarea id="context" placeholder="أدخل النص الطبي أو الأعراض..."></textarea>
+        <input id="question" type="text" placeholder="اكتب سؤالك هنا...">
+        <button onclick="askQuestion()">أرسل</button>
+        <div id="answer"></div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>

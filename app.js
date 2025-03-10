@@ -1,30 +1,25 @@
-async function sendMessage() {
-    const userInput = document.getElementById("user-input").value;
-    const chatLog = document.getElementById("chat-log");
+async function askQuestion() {
+    const context = document.getElementById("context").value;
+    const question = document.getElementById("question").value;
+    const answerDiv = document.getElementById("answer");
 
-    if (!userInput) return;
+    if (!question || !context) {
+        answerDiv.innerHTML = "<p>الرجاء إدخال النص والسؤال.</p>";
+        return;
+    }
 
-    chatLog.innerHTML += `<div><b>أنت:</b> ${userInput}</div>`;
+    answerDiv.innerHTML = "<p>جارٍ المعالجة...</p>";
 
     try {
         const response = await fetch("/.netlify/functions/chatbot", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userInput })
+            body: JSON.stringify({ question, context })
         });
 
         const data = await response.json();
-        
-        // استخراج النص من الحقل الصحيح
-        const botMessage = data.content || "لم أتمكن من فهم سؤالك.";
-
-        chatLog.innerHTML += `<div><b>البوت:</b> ${botMessage}</div>`;
-        chatLog.scrollTop = chatLog.scrollHeight;
-
+        answerDiv.innerHTML = `<p><b>الإجابة:</b> ${data.answer}</p>`;
     } catch (error) {
-        console.error("Error:", error);
-        chatLog.innerHTML += `<div><b>البوت:</b> حدث خطأ أثناء الاتصال بالخادم.</div>`;
+        answerDiv.innerHTML = "<p>حدث خطأ أثناء جلب الإجابة.</p>";
     }
-
-    document.getElementById("user-input").value = "";
 }

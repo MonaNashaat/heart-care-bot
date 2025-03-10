@@ -1,39 +1,41 @@
+import { AutoTokenizer, AutoModelForQuestionAnswering } from "@huggingface/transformers";
+import { pipeline } from "transformers";
+import fs from "fs";
+
+const modelPath = "./trained_health_bot";
+
+let qa_pipeline;
+
+async function loadModel() {
+    const tokenizer = await AutoTokenizer.from_pretrained(modelPath);
+    const model = await AutoModelForQuestionAnswering.from_pretrained(modelPath);
+    qa_pipeline = pipeline("question-answering", model, tokenizer);
+}
+
+await loadModel();
+
 export async function handler(event) {
     try {
-        const { message } = JSON.parse(event.body);
+        const { question, context } = JSON.parse(event.body);
 
-        if (!process.env.HUGGINGFACE_API_KEY) {
+        if (!question || !context) {
             return {
-                statusCode: 500,
-                body: JSON.stringify({ error: "API key is missing. Check your environment variables." })
+                statusCode: 400,
+                body: JSON.stringify({ error: "يرجى إدخال السؤال والنص المرجعي" })
             };
         }
 
-        const response = await fetch("https://api-inference.huggingface.co/models/aubmindlab/aragpt2-medium", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`
-            },
-            body: JSON.stringify({ inputs: message })
-        });
-
-        const data = await response.json();
-
-        console.log("🔍 API Response:", data); // ✅ طباعة الرد في الـ Logs
-
-        // محاولة الوصول للنص المُولد
-        const botResponse = data.content || (Array.isArray(data) && data[0]?.generated_text) || "لم أتمكن من فهم سؤالك.";
+        const answer = await qa_pipeline({ question, context });
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ content: botResponse })
+            body: JSON.stringify({ answer: answer.answer })
         };
-
     } catch (error) {
+        console.error("حدث خطأ:", error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "Internal Server Error", details: error.message })
+            body: JSON.stringify({ error: "حدث خطأ أثناء معالجة السؤال" })
         };
     }
 }
