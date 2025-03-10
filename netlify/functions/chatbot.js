@@ -9,7 +9,7 @@ export async function handler(event) {
             };
         }
 
-        const response = await fetch("https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill", {
+        const response = await fetch("https://api-inference.huggingface.co/models/aubmindlab/aragpt2-medium", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
