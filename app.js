@@ -14,10 +14,11 @@ async function sendMessage() {
         });
 
         const data = await response.json();
+        
+        // استخراج النص من الحقل الصحيح
+        const botMessage = data.content || "لم أتمكن من فهم سؤالك.";
 
-        // عرض الرد كما هو دون فلترة
-        chatLog.innerHTML += `<div><b>الرد الخام:</b> ${JSON.stringify(data)}</div>`;
-
+        chatLog.innerHTML += `<div><b>البوت:</b> ${botMessage}</div>`;
         chatLog.scrollTop = chatLog.scrollHeight;
 
     } catch (error) {
