@@ -1,4 +1,4 @@
-const apiKey = `${OPENAI_API_KEY}`;
+// app.js — واجهة الشات بوت
 
 async function sendMessage() {
     const userInput = document.getElementById("user-input").value;
@@ -10,20 +10,15 @@ async function sendMessage() {
     chatLog.innerHTML += `<div><b>أنت:</b> ${userInput}</div>`;
 
     try {
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        // إرسال الرسالة إلى الخادم (Netlify Function)
+        const response = await fetch("/.netlify/functions/chatbot", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model: "gpt-4",
-                messages: [{ role: "user", content: userInput }]
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userInput })
         });
 
         const data = await response.json();
-        const botMessage = data.choices[0]?.message?.content || "عذرًا، حدث خطأ. حاول مرة أخرى.";
+        const botMessage = data.choices?.[0]?.message?.content || "عذرًا، حدث خطأ أثناء الاتصال بالخادم.";
 
         // عرض رسالة البوت
         chatLog.innerHTML += `<div><b>البوت:</b> ${botMessage}</div>`;
@@ -33,5 +28,13 @@ async function sendMessage() {
         chatLog.innerHTML += `<div><b>البوت:</b> حدث خطأ أثناء الاتصال بالخادم.</div>`;
     }
 
+    // تنظيف حقل الإدخال
     document.getElementById("user-input").value = "";
 }
+
+// استماع للضغط على Enter
+document.getElementById("user-input").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+});
