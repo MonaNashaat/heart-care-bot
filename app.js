@@ -26,6 +26,8 @@ async function sendMessage() {
     } catch (error) {
         console.error("Error:", error);
         chatLog.innerHTML += `<div><b>البوت:</b> حدث خطأ أثناء الاتصال بالخادم.</div>`;
+        chatLog.innerHTML +=error
+    
     }
 
     // تنظيف حقل الإدخال
