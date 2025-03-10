@@ -1,12 +1,11 @@
 export async function handler(event) {
     try {
         const { message } = JSON.parse(event.body);
-        const apiKey = process.env.HUGGINGFACE_API_KEY;
 
-        if (!apiKey) {
+        if (!process.env.HUGGINGFACE_API_KEY) {
             return {
                 statusCode: 500,
-                body: JSON.stringify({ error: "API key is missing. Check your Hugging Face environment variables." })
+                body: JSON.stringify({ error: "API key is missing. Check your environment variables." })
             };
         }
 
@@ -14,15 +13,18 @@ export async function handler(event) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
+                "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`
             },
             body: JSON.stringify({ inputs: message })
         });
 
         const data = await response.json();
+
+        console.log("API Response:", data); // ✅ طباعة الرد في الـ Logs
+
         return {
             statusCode: 200,
-            body: JSON.stringify({ content: data.generated_text })
+            body: JSON.stringify({ content: data.generated_text || "لم أتمكن من فهم سؤالك." })
         };
 
     } catch (error) {
