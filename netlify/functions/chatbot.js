@@ -6,22 +6,26 @@ const modelPath = "./trained_health_bot";
 
 let qa_pipeline;
 
-async function loadModel() {
-    const tokenizer = await AutoTokenizer.from_pretrained(modelPath);
-    const model = await AutoModelForQuestionAnswering.from_pretrained(modelPath);
-    qa_pipeline = pipeline("question-answering", model, tokenizer);
+// Load the model once
+async function initializeModel() {
+    if (!qa_pipeline) {
+        const tokenizer = await AutoTokenizer.from_pretrained(modelPath);
+        const model = await AutoModelForQuestionAnswering.from_pretrained(modelPath);
+        qa_pipeline = pipeline("question-answering", model, tokenizer);
+        console.log("✅ Model loaded successfully!");
+    }
 }
-
-await loadModel();
 
 export async function handler(event) {
     try {
+        await initializeModel();  // Ensure the model is loaded before handling requests
+
         const { question, context } = JSON.parse(event.body);
 
         if (!question || !context) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ error: "يرجى إدخال السؤال والنص المرجعي" })
+                body: JSON.stringify({ error: "Please provide both question and context" })
             };
         }
 
@@ -32,10 +36,10 @@ export async function handler(event) {
             body: JSON.stringify({ answer: answer.answer })
         };
     } catch (error) {
-        console.error("حدث خطأ:", error);
+        console.error("❌ Error:", error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "حدث خطأ أثناء معالجة السؤال" })
+            body: JSON.stringify({ error: "An error occurred while processing the question" })
         };
     }
 }
