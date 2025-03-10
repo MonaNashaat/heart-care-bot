@@ -1,4 +1,4 @@
-const apiKey = process.env.OPENAI_API_KEY;
+const apiKey = `${OPENAI_API_KEY}`;
 
 async function sendMessage() {
     const userInput = document.getElementById("user-input").value;
