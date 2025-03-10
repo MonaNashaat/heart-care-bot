@@ -3,54 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شات بوت الرعاية الصحية</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f9f9f9; margin: 0; padding: 20px; }
-        h1 { color: #282c4e; }
-        .chatbox { max-width: 800px; margin: auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
-        .chat { margin: 10px 0; }
-        .user { color: #fff; background: #007bff; padding: 10px; border-radius: 5px; }
-        .bot { background: #e9ecef; padding: 10px; border-radius: 5px; }
-        input, button { padding: 10px; margin-top: 10px; }
-    </style>
+    <title>مساعد الرعاية الصحية</title>
 </head>
 <body>
-    <h1>شات بوت الرعاية الصحية</h1>
-    <div class="chatbox" id="chatbox">
-        <div class="chat bot">مرحبًا بك! كيف يمكنني مساعدتك بخصوص صحتك؟</div>
-    </div>
-    <input type="text" id="userInput" placeholder="اكتب سؤالك هنا...">
-    <button onclick="sendMessage()">إرسال</button>
-
-    <script>
-        function sendMessage() {
-            const userInput = document.getElementById('userInput').value;
-            const chatbox = document.getElementById('chatbox');
-            
-            if (userInput.trim() === '') return;
-            
-            chatbox.innerHTML += `<div class='chat user'>${userInput}</div>`;
-            document.getElementById('userInput').value = '';
-            
-            let botResponse = '';
-
-            if (userInput.includes('أعراض الذبحة')) {
-                botResponse = 'أعراض الذبحة تشمل ألمًا في الصدر، ضيق التنفس، التعرق، والغثيان. يُفضل الاتصال بالإسعاف إذا استمرت الأعراض لأكثر من 5 دقائق.';
-            } else if (userInput.includes('الإسعافات الأولية')) {
-                botResponse = 'إذا شعرت بألم في الصدر، اتصل بالإسعاف على الرقم 123. يُمكنك تناول قرص نيتروجليسيرين تحت اللسان أثناء انتظار المساعدة.';
-            } else if (userInput.includes('ضغط الدم')) {
-                botResponse = 'الضغط الطبيعي هو 120/80 مم زئبق. يُفضل قياس الضغط صباحًا قبل الأكل أو تناول الأدوية.';
-            } else if (userInput.includes('الإقلاع عن التدخين')) {
-                botResponse = 'للإقلاع عن التدخين، يمكنك تحديد يوم للإقلاع أو تقليل عدد السجائر تدريجيًا. يمكنك أيضًا طلب الدعم من الخط الساخن 16805.';
-            } else if (userInput.includes('النظام الغذائي الصحي')) {
-                botResponse = 'النظام الغذائي الصحي يشمل تناول الخضروات، الحبوب الكاملة، الدهون الصحية، وتجنب الأطعمة المصنعة والغنية بالدهون المتحولة.';
-            } else {
-                botResponse = 'عذرًا، لم أفهم سؤالك. يُمكنك تجربة كتابة سؤال آخر!';
-            }
-
-            chatbox.innerHTML += `<div class='chat bot'>${botResponse}</div>`;
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
-    </script>
+    <h1>مرحبًا بك في مساعد الرعاية الصحية</h1>
+    
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v2.2/shareable.html?configUrl=https://files.bpcontent.cloud/2025/03/10/11/20250310110042-05GMM6X0.json"></script>
 </body>
 </html>
