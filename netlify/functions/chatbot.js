@@ -30,7 +30,7 @@ export async function handler(event) {
     } catch (error) {
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "حدث خطأ أثناء الاتصال بالخادم", details: error.message })
+            body: JSON.stringify({ error: "حدث خطأ أثناء الاتصال ...", details: error.message })
         };
     }
 }
