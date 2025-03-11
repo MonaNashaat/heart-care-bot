@@ -1,32 +1,27 @@
-import { pipeline } from "@huggingface/transformers";
-
-let qa_pipeline;
-
-async function loadModel() {
-    if (!qa_pipeline) {
-        qa_pipeline = pipeline("text-generation", "tiiuae/falcon-7b-instruct");
-        console.log("✅ Falcon model loaded!");
-    }
-}
+import fetch from "node-fetch";
 
 export async function handler(event) {
     try {
-        await loadModel();
-
         const { question } = JSON.parse(event.body);
 
         if (!question) {
             return { statusCode: 400, body: JSON.stringify({ error: "يرجى إدخال سؤال." }) };
         }
 
-        const response = await qa_pipeline(question, {
-            max_length: 200,
-            num_return_sequences: 1,
+        const response = await fetch("https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ inputs: question })
         });
 
+        const data = await response.json();
+        
         return {
             statusCode: 200,
-            body: JSON.stringify({ answer: response[0].generated_text })
+            body: JSON.stringify({ answer: data[0]?.generated_text || "لم أتمكن من العثور على إجابة." })
         };
 
     } catch (error) {
