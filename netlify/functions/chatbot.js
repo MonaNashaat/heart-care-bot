@@ -13,36 +13,52 @@ export async function handler(event) {
 
         console.log("🔍 Received question:", question);
 
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "gpt-3.5-turbo",                      // استخدم GPT-3.5 لتقليل التكاليف
-                messages: [{ role: "user", content: question }],
-                max_tokens: 500,
-                temperature: 0.7
-            })
-        });
+        const messages = [{ role: "user", content: question }];
+        let fullAnswer = "";
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("❌ API Error:", errorText);
+        while (true) {
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",      // يمكنك تغييره إلى "gpt-4" إذا أردت
+                    messages,
+                    max_tokens: 1000,           // السماح بإجابات أطول
+                    temperature: 0.7
+                })
+            });
 
-            return {
-                statusCode: response.status,
-                body: JSON.stringify({ error: `OpenAI API Error: ${errorText}` })
-            };
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("❌ API Error:", errorText);
+
+                return {
+                    statusCode: response.status,
+                    body: JSON.stringify({ error: `OpenAI API Error: ${errorText}` })
+                };
+            }
+
+            const data = await response.json();
+            const answerChunk = data.choices[0]?.message?.content || "";
+
+            fullAnswer += answerChunk;
+
+            // تحقق من انتهاء الرد أو استمرار الطلب
+            if (answerChunk.length < 1000) {
+                break;
+            }
+
+            messages.push({ role: "assistant", content: answerChunk });
         }
 
-        const data = await response.json();
-        console.log("✅ API Response:", data);
+        console.log("✅ Full Answer Generated!");
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ answer: data.choices[0]?.message?.content || "لم أتمكن من العثور على إجابة." })
+            body: JSON.stringify({ answer: fullAnswer })
         };
 
     } catch (error) {
