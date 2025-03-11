@@ -18,7 +18,7 @@
             padding: 20px;
             direction: rtl;
         }
-        
+
         #chat-container {
             background: #fff;
             padding: 20px;
@@ -27,12 +27,12 @@
             width: 100%;
             max-width: 800px;
         }
-        
+
         h1 {
             text-align: center;
             color: #333;
         }
-        
+
         textarea {
             width: 100%;
             height: 100px;
@@ -42,7 +42,7 @@
             font-size: 16px;
             text-align: right;
         }
-        
+
         button {
             width: 100%;
             padding: 10px;
@@ -53,11 +53,11 @@
             cursor: pointer;
             font-size: 18px;
         }
-        
+
         button:hover {
             background: #0056b3;
         }
-        
+
         #answer {
             margin-top: 20px;
             padding: 15px;
@@ -78,12 +78,25 @@
     </div>
 
     <script>
+        const faq = [
+            { question: "كيف يكون الألم عند حدوث الذبحة الصدرية؟", answer: "الألم قد يكون ضغطًا شديدًا على الصدر أو شعورًا بالاحتراق، مع ضيق في التنفس أو تعرق أو غثيان. ينتشر الألم أحيانًا إلى الذراع الأيسر أو الفك." },
+            { question: "ما الذي يجب فعله عند ظهور أعراض الذبحة الصدرية؟", answer: "الراحة فورًا، وتناول النتروجليسرين إذا كان بوصفة طبية، وإذا استمر الألم أكثر من 5 دقائق يجب الاتصال بوحدة الطوارئ (123)." },
+            { question: "كيف يتم الإنعاش القلبي الرئوي؟", answer: "الضغط على منتصف الصدر بمعدل 100-120 ضغطة في الدقيقة، مع تقديم نفسين بعد كل 30 ضغطة إذا كنت مدربًا." }
+        ];
+
         async function askQuestion() {
             const question = document.getElementById("question").value;
             const answerDiv = document.getElementById("answer");
 
             if (!question) {
                 answerDiv.innerHTML = "<p>الرجاء إدخال سؤال.</p>";
+                return;
+            }
+
+            // تحقق من الأسئلة الشائعة
+            const foundFAQ = faq.find(item => question.includes(item.question));
+            if (foundFAQ) {
+                answerDiv.innerHTML = `<h3>الإجابة:</h3><p>${foundFAQ.answer}</p>`;
                 return;
             }
 
