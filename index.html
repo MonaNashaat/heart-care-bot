@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوت الاستشارات الصحية</title>
-    <link rel="stylesheet" href="style.css">
+    <title>نبض الصحة 🩺</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
     <style>
         body {
@@ -19,7 +19,7 @@
             direction: rtl;
         }
 
-        #chat-container {
+        .chat-container {
             background: #fff;
             padding: 20px;
             border-radius: 15px;
@@ -28,37 +28,17 @@
             max-width: 800px;
         }
 
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
         textarea {
             width: 100%;
             height: 100px;
             padding: 10px;
-            border: 1px solid #ccc;
             border-radius: 8px;
             font-size: 16px;
             text-align: right;
+            font-family: 'Cairo', sans-serif;
         }
 
-        button {
-            width: 100%;
-            padding: 10px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        button:hover {
-            background: #0056b3;
-        }
-
-        #answer {
+        .answer-box {
             margin-top: 20px;
             padding: 15px;
             background: #f9f9f9;
@@ -70,37 +50,27 @@
     </style>
 </head>
 <body>
-    <div id="chat-container">
-        <h1>طبيبك الذكي </h1>
-        <textarea id="question" placeholder="اكتب سؤالك هنا..."></textarea>
-        <button onclick="askQuestion()">إرسال</button>
-        <div id="answer">الإجابة ستظهر هنا...</div>
+    <div class="container chat-container">
+        <h1 class="text-center">نبض الصحة 🩺</h1>
+        <div class="mb-3">
+            <label for="question" class="form-label">اكتب سؤالك هنا:</label>
+            <textarea id="question" class="form-control" placeholder="مثال: ما هي أعراض الذبحة الصدرية؟"></textarea>
+        </div>
+        <button class="btn btn-primary w-100" onclick="askQuestion()">إرسال</button>
+        <div id="answer" class="answer-box mt-3">الإجابة ستظهر هنا...</div>
     </div>
 
     <script>
-        const faq = [
-            { question: "كيف يكون الألم عند حدوث الذبحة الصدرية؟", answer: "الألم قد يكون ضغطًا شديدًا على الصدر أو شعورًا بالاحتراق، مع ضيق في التنفس أو تعرق أو غثيان. ينتشر الألم أحيانًا إلى الذراع الأيسر أو الفك." },
-            { question: "ما الذي يجب فعله عند ظهور أعراض الذبحة الصدرية؟", answer: "الراحة فورًا، وتناول النتروجليسرين إذا كان بوصفة طبية، وإذا استمر الألم أكثر من 5 دقائق يجب الاتصال بوحدة الطوارئ (123)." },
-            { question: "كيف يتم الإنعاش القلبي الرئوي؟", answer: "الضغط على منتصف الصدر بمعدل 100-120 ضغطة في الدقيقة، مع تقديم نفسين بعد كل 30 ضغطة إذا كنت مدربًا." }
-        ];
-
         async function askQuestion() {
             const question = document.getElementById("question").value;
             const answerDiv = document.getElementById("answer");
 
             if (!question) {
-                answerDiv.innerHTML = "<p>الرجاء إدخال سؤال.</p>";
+                answerDiv.innerHTML = "<p class='text-danger'>الرجاء إدخال سؤال.</p>";
                 return;
             }
 
-            // تحقق من الأسئلة الشائعة
-            const foundFAQ = faq.find(item => question.includes(item.question));
-            if (foundFAQ) {
-                answerDiv.innerHTML = `<h3>الإجابة:</h3><p>${foundFAQ.answer}</p>`;
-                return;
-            }
-
-            answerDiv.innerHTML = "<p>جارٍ المعالجة...</p>";
+            answerDiv.innerHTML = "<div class='text-info'>جارٍ المعالجة...</div>";
 
             try {
                 const response = await fetch("/.netlify/functions/chatbot", {
@@ -113,13 +83,15 @@
                 if (data.answer) {
                     answerDiv.innerHTML = `<h3>الإجابة:</h3><p>${data.answer}</p>`;
                 } else {
-                    answerDiv.innerHTML = `<p style="color: red;">خطأ: ${data.error}</p>`;
+                    answerDiv.innerHTML = `<p class='text-danger'>خطأ: ${data.error}</p>`;
                 }
             } catch (error) {
                 console.error("❌ Client Error:", error);
-                answerDiv.innerHTML = "<p style='color: red;'>حدث خطأ أثناء الاتصال بالخادم.</p>";
+                answerDiv.innerHTML = "<p class='text-danger'>حدث خطأ أثناء الاتصال بالخادم.</p>";
             }
         }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
