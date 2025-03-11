@@ -18,7 +18,7 @@ export async function handler(event) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "gpt-3.5-turbo",  // Use GPT-3.5 (cheaper) or GPT-4
+                model: "gpt-3.5-turbo",
                 messages: [{ role: "user", content: question }],
                 max_tokens: 500,
                 temperature: 0.7
