@@ -17,9 +17,13 @@ async function askQuestion() {
         });
 
         const data = await response.json();
-        answerDiv.innerHTML = `<p><b>الإجابة:</b> ${data.answer}</p>`;
+        if (data.answer) {
+            answerDiv.innerHTML = `<p><b>الإجابة:</b> ${data.answer}</p>`;
+        } else {
+            answerDiv.innerHTML = `<p>خطأ: ${data.error}</p>`;
+        }
     } catch (error) {
-        console.error("Error:", error);
-        answerDiv.innerHTML = "<p>حدث خطأ أثناء جلب الإجابة.</p>";
+        console.error("❌ Client Error:", error);
+        answerDiv.innerHTML = "<p>حدث خطأ أثناء الاتصال بالخادم.</p>";
     }
 }

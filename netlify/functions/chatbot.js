@@ -11,6 +11,8 @@ export async function handler(event) {
             };
         }
 
+        console.log("🔍 Received question:", question);
+
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -18,7 +20,7 @@ export async function handler(event) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "gpt-3.5-turbo",
+                model: "gpt-3.5-turbo",                      // استخدم GPT-3.5 لتقليل التكاليف
                 messages: [{ role: "user", content: question }],
                 max_tokens: 500,
                 temperature: 0.7
@@ -36,7 +38,8 @@ export async function handler(event) {
         }
 
         const data = await response.json();
-        
+        console.log("✅ API Response:", data);
+
         return {
             statusCode: 200,
             body: JSON.stringify({ answer: data.choices[0]?.message?.content || "لم أتمكن من العثور على إجابة." })
