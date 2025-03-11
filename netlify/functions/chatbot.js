@@ -18,7 +18,7 @@ export async function handler(event) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "gpt-3.5-turbo",  // Use a cheaper model if needed
+                model: "gpt-3.5-turbo",  // Use GPT-3.5 (cheaper) or GPT-4
                 messages: [{ role: "user", content: question }],
                 max_tokens: 500,
                 temperature: 0.7
@@ -26,31 +26,17 @@ export async function handler(event) {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error("❌ API Error:", errorData);
-
-            // Handle specific errors
-            if (response.status === 429) {
-                return {
-                    statusCode: 429,
-                    body: JSON.stringify({ error: "لقد وصلت إلى الحد الأقصى للاستخدام في OpenAI. يرجى التحقق من خطتك." })
-                };
-            }
-
-            if (response.status === 401) {
-                return {
-                    statusCode: 401,
-                    body: JSON.stringify({ error: "مفتاح API غير صحيح أو مفقود. يرجى التحقق من الإعدادات." })
-                };
-            }
+            const errorText = await response.text();
+            console.error("❌ API Error:", errorText);
 
             return {
                 statusCode: response.status,
-                body: JSON.stringify({ error: errorData.error?.message || "حدث خطأ غير متوقع في API." })
+                body: JSON.stringify({ error: `OpenAI API Error: ${errorText}` })
             };
         }
 
         const data = await response.json();
+        
         return {
             statusCode: 200,
             body: JSON.stringify({ answer: data.choices[0]?.message?.content || "لم أتمكن من العثور على إجابة." })
