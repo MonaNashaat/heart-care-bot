@@ -8,27 +8,34 @@ export async function handler(event) {
             return { statusCode: 400, body: JSON.stringify({ error: "يرجى إدخال سؤال." }) };
         }
 
-        const response = await fetch("https://api-inference.huggingface.co/models/tiiuae/falcon-7b-instruct", {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ inputs: question })
+            body: JSON.stringify({
+                model: "gpt-4",  // يمكنك استخدام "gpt-3.5-turbo" لو أردت خطة أرخص
+                messages: [{ role: "user", content: question }],
+                max_tokens: 500,
+                temperature: 0.7
+            })
         });
 
         const data = await response.json();
         
-        // 🟡 طباعة الاستجابة لمعرفة هيكل البيانات
-        console.log("🔍 API Response:", data);
+        if (response.status !== 200) {
+            console.error("❌ API Error:", data);
+            return { statusCode: response.status, body: JSON.stringify({ error: data.error.message }) };
+        }
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ answer: data[0]?.generated_text || "لم أتمكن من العثور على إجابة." })
+            body: JSON.stringify({ answer: data.choices[0]?.message?.content || "لم أتمكن من العثور على إجابة." })
         };
 
     } catch (error) {
-        console.error("❌ Error:", error);
-        return { statusCode: 500, body: JSON.stringify({ error: "حدث خطأ أثناء معالجة السؤال." }) };
+        console.error("❌ Server Error:", error);
+        return { statusCode: 500, body: JSON.stringify({ error: "حدث خطأ داخلي في الخادم." }) };
     }
 }
