@@ -5,15 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوت الاستشارات الصحية</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #74EBD5, #9FACE6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        #chat-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        #answer {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+    </style>
 </head>
 <body>
     <div id="chat-container">
-        <h1>مرحبًا! كيف يمكنني مساعدتك اليوم؟ 🩺</h1>
+        <h1>بوت الاستشارات الصحية 🩺</h1>
         <textarea id="question" placeholder="اكتب سؤالك هنا..."></textarea>
         <button onclick="askQuestion()">إرسال</button>
-        <div id="answer"></div>
+        <div id="answer">الإجابة ستظهر هنا...</div>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        async function askQuestion() {
+            const question = document.getElementById("question").value;
+            const answerDiv = document.getElementById("answer");
+
+            if (!question) {
+                answerDiv.innerHTML = "<p>الرجاء إدخال سؤال.</p>";
+                return;
+            }
+
+            answerDiv.innerHTML = "<p>جارٍ المعالجة...</p>";
+
+            try {
+                const response = await fetch("/.netlify/functions/chatbot", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question })
+                });
+
+                const data = await response.json();
+                if (data.answer) {
+                    answerDiv.innerHTML = `<h3>الإجابة:</h3><p>${data.answer}</p>`;
+                } else {
+                    answerDiv.innerHTML = `<p style="color: red;">خطأ: ${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error("❌ Client Error:", error);
+                answerDiv.innerHTML = "<p style='color: red;'>حدث خطأ أثناء الاتصال بالخادم.</p>";
+            }
+        }
+    </script>
 </body>
 </html>
