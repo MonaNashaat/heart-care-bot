@@ -1,10 +1,9 @@
 async function askQuestion() {
-    const context = document.getElementById("context").value;
     const question = document.getElementById("question").value;
     const answerDiv = document.getElementById("answer");
 
-    if (!question || !context) {
-        answerDiv.innerHTML = "<p>الرجاء إدخال النص والسؤال.</p>";
+    if (!question) {
+        answerDiv.innerHTML = "<p>الرجاء إدخال سؤال.</p>";
         return;
     }
 
@@ -14,12 +13,13 @@ async function askQuestion() {
         const response = await fetch("/.netlify/functions/chatbot", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question, context })
+            body: JSON.stringify({ question })
         });
 
         const data = await response.json();
         answerDiv.innerHTML = `<p><b>الإجابة:</b> ${data.answer}</p>`;
     } catch (error) {
+        console.error("Error:", error);
         answerDiv.innerHTML = "<p>حدث خطأ أثناء جلب الإجابة.</p>";
     }
 }

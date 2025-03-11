@@ -1,45 +1,36 @@
-import { AutoTokenizer, AutoModelForQuestionAnswering } from "@huggingface/transformers";
-import { pipeline } from "transformers";
-import fs from "fs";
-
-const modelPath = "./trained_health_bot";
+import { pipeline } from "@huggingface/transformers";
 
 let qa_pipeline;
 
-// Load the model once
-async function initializeModel() {
+async function loadModel() {
     if (!qa_pipeline) {
-        const tokenizer = await AutoTokenizer.from_pretrained(modelPath);
-        const model = await AutoModelForQuestionAnswering.from_pretrained(modelPath);
-        qa_pipeline = pipeline("question-answering", model, tokenizer);
-        console.log("✅ Model loaded successfully!");
+        qa_pipeline = pipeline("text-generation", "tiiuae/falcon-7b-instruct");
+        console.log("✅ Falcon model loaded!");
     }
 }
 
 export async function handler(event) {
     try {
-        await initializeModel();  // Ensure the model is loaded before handling requests
+        await loadModel();
 
-        const { question, context } = JSON.parse(event.body);
+        const { question } = JSON.parse(event.body);
 
-        if (!question || !context) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify({ error: "Please provide both question and context" })
-            };
+        if (!question) {
+            return { statusCode: 400, body: JSON.stringify({ error: "يرجى إدخال سؤال." }) };
         }
 
-        const answer = await qa_pipeline({ question, context });
+        const response = await qa_pipeline(question, {
+            max_length: 200,
+            num_return_sequences: 1,
+        });
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ answer: answer.answer })
+            body: JSON.stringify({ answer: response[0].generated_text })
         };
+
     } catch (error) {
         console.error("❌ Error:", error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: "An error occurred while processing the question" })
-        };
+        return { statusCode: 500, body: JSON.stringify({ error: "حدث خطأ أثناء معالجة السؤال." }) };
     }
 }
