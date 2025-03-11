@@ -19,6 +19,9 @@ export async function handler(event) {
 
         const data = await response.json();
         
+        // 🟡 طباعة الاستجابة لمعرفة هيكل البيانات
+        console.log("🔍 API Response:", data);
+
         return {
             statusCode: 200,
             body: JSON.stringify({ answer: data[0]?.generated_text || "لم أتمكن من العثور على إجابة." })
