@@ -1,20 +1,72 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>الفيديوهات التعليمية والتوعوية</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📺 الفيديوهات التعليمية - طبيبك الذكي</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9; }
-    h2 { color: #2c3e50; }
-    .section { margin-bottom: 40px; }
-    .video-container {
-      margin-bottom: 20px;
+    body {
+      font-family: "Cairo", sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin: 0;
+      padding: 0 20px;
+      min-height: 100vh;
     }
+
+    h1 {
+      text-align: center;
+      color: #fff;
+      padding-top: 30px;
+    }
+
+    .section {
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      max-width: 1000px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .section h2 {
+      color: #333;
+      border-bottom: 2px solid #764ba2;
+      padding-bottom: 10px;
+    }
+
+    .video-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .video-container {
+      width: calc(50% - 10px);
+      box-sizing: border-box;
+    }
+
+    .video-container p {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
     iframe {
       width: 100%;
-      max-width: 600px;
-      height: 340px;
+      height: 300px;
       border: none;
+    }
+
+    @media (max-width: 768px) {
+      .video-container {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -24,73 +76,83 @@
 
   <div class="section">
     <h2>🩺 الإسعافات الأولية</h2>
-    <div class="video-container">
-      <p>وضعية الإفاقة (الاستلقاء الجانبي)</p>
-      <iframe src="https://www.youtube.com/embed/8iRTC4RIVYk" allowfullscreen></iframe>
-    </div>
-    <div class="video-container">
-      <p>الإنعاش القلبي الرئوي (CPR)</p>
-      <iframe src="https://www.youtube.com/embed/ye3IJWHaVEo" allowfullscreen></iframe>
-    </div>
-    <div class="video-container">
-      <p>استخدام جهاز مزيل الرجفان الخارجي الآلي (AED)</p>
-      <iframe src="https://www.youtube.com/embed/o_1l11ASBPk" allowfullscreen></iframe>
+    <div class="video-grid">
+      <div class="video-container">
+        <p>وضعية الإفاقة (الاستلقاء الجانبي)</p>
+        <iframe src="https://www.youtube.com/embed/8iRTC4RIVYk" allowfullscreen></iframe>
+      </div>
+      <div class="video-container">
+        <p>الإنعاش القلبي الرئوي (CPR)</p>
+        <iframe src="https://www.youtube.com/embed/ye3IJWHaVEo" allowfullscreen></iframe>
+      </div>
+      <div class="video-container">
+        <p>استخدام جهاز مزيل الرجفان الخارجي الآلي (AED)</p>
+        <iframe src="https://www.youtube.com/embed/o_1l11ASBPk" allowfullscreen></iframe>
+      </div>
     </div>
   </div>
 
   <div class="section">
     <h2>🩹 قياسات صحية</h2>
-    <div class="video-container">
-      <p>كيفية قياس ضغط الدم بشكل صحيح</p>
-      <iframe src="https://www.youtube.com/embed/5Jhyjaf62R0" allowfullscreen></iframe>
-    </div>
-    <div class="video-container">
-      <p>قياس مستوى السكر في الدم</p>
-      <iframe src="https://www.youtube.com/embed/RIK-O7DeDkc" allowfullscreen></iframe>
-    </div>
-    <div class="video-container">
-      <p>كيفية قياس نبضات القلب</p>
-      <iframe src="https://www.youtube.com/embed/9ErLEImZvHE" allowfullscreen></iframe>
+    <div class="video-grid">
+      <div class="video-container">
+        <p>كيفية قياس ضغط الدم بشكل صحيح</p>
+        <iframe src="https://www.youtube.com/embed/5Jhyjaf62R0" allowfullscreen></iframe>
+      </div>
+      <div class="video-container">
+        <p>قياس مستوى السكر في الدم</p>
+        <iframe src="https://www.youtube.com/embed/RIK-O7DeDkc" allowfullscreen></iframe>
+      </div>
+      <div class="video-container">
+        <p>كيفية قياس نبضات القلب</p>
+        <iframe src="https://www.youtube.com/embed/9ErLEImZvHE" allowfullscreen></iframe>
+      </div>
     </div>
   </div>
 
   <div class="section">
     <h2>🍽️ التثقيف الغذائي</h2>
-    <div class="video-container">
-      <p>كيفية قراءة ملصق الحقائق الغذائية</p>
-      <iframe src="https://www.youtube.com/embed/EacUK7VLY8w" allowfullscreen></iframe>
-    </div>
-    <div class="video-container">
-      <p>كيفية وضع خطة غذائية</p>
-      <p><em>لم يتم تحديد فيديو بعد</em></p>
+    <div class="video-grid">
+      <div class="video-container">
+        <p>كيفية قراءة ملصق الحقائق الغذائية</p>
+        <iframe src="https://www.youtube.com/embed/EacUK7VLY8w" allowfullscreen></iframe>
+      </div>
+      <div class="video-container">
+        <p>كيفية وضع خطة غذائية</p>
+        <p><em>لم يتم تحديد فيديو بعد</em></p>
+      </div>
     </div>
   </div>
 
   <div class="section">
     <h2>🧘‍♂️ الاسترخاء والصحة النفسية</h2>
-    <div class="video-container">
-      <p>الصور الموجهة</p>
-      <iframe src="https://www.youtube.com/embed/1AmDFrrZAlU" allowfullscreen></iframe>
-    </div>
-    <div class="video-container">
-      <p>ما هو التأمل؟</p>
-      <iframe src="https://www.youtube.com/embed/Zk4uENxwPEM" allowfullscreen></iframe>
-    </div>
-    <div class="video-container">
-      <p>تمارين استرخاء العضلات التدريجي</p>
-      <iframe src="https://www.youtube.com/embed/5hiVnv2cMGg" allowfullscreen></iframe>
-    </div>
-    <div class="video-container">
-      <p>تقنيات التنفس لتخفيف التوتر</p>
-      <iframe src="https://www.youtube.com/embed/-q7ddrV72Tw" allowfullscreen></iframe>
+    <div class="video-grid">
+      <div class="video-container">
+        <p>الصور الموجهة</p>
+        <iframe src="https://www.youtube.com/embed/1AmDFrrZAlU" allowfullscreen></iframe>
+      </div>
+      <div class="video-container">
+        <p>ما هو التأمل؟</p>
+        <iframe src="https://www.youtube.com/embed/Zk4uENxwPEM" allowfullscreen></iframe>
+      </div>
+      <div class="video-container">
+        <p>تمارين استرخاء العضلات التدريجي</p>
+        <iframe src="https://www.youtube.com/embed/5hiVnv2cMGg" allowfullscreen></iframe>
+      </div>
+      <div class="video-container">
+        <p>تقنيات التنفس لتخفيف التوتر</p>
+        <iframe src="https://www.youtube.com/embed/-q7ddrV72Tw" allowfullscreen></iframe>
+      </div>
     </div>
   </div>
 
   <div class="section">
     <h2>🏃‍♂️ النشاط البدني</h2>
-    <div class="video-container">
-      <p>أفضل التمارين لمرضى أمراض الشريان التاجي</p>
-      <iframe src="https://www.youtube.com/embed/VN1Ef5zabmg" allowfullscreen></iframe>
+    <div class="video-grid">
+      <div class="video-container">
+        <p>أفضل التمارين لمرضى أمراض الشريان التاجي</p>
+        <iframe src="https://www.youtube.com/embed/VN1Ef5zabmg" allowfullscreen></iframe>
+      </div>
     </div>
   </div>
 
