@@ -1,13 +1,18 @@
-import { fetch } from "undici";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+import { fetch } from "undici";
 
-const dataPath = new URL("qa_responses.json", import.meta.url);
+// تحديد المسار الحالي للملف
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// تحميل الردود المحفوظة
+// تعديل المسار للملف JSON
+const dataPath = path.join(__dirname, "qa_responses.json");  // ✔️ Use path.join here
+
 let qaData = {};
 try {
-  const rawData = fs.readFileSync(dataPath, { encoding: "utf-8" });
+  const rawData = fs.readFileSync(dataPath, "utf-8");
   qaData = JSON.parse(rawData);
 } catch (err) {
   console.error("❌ لم يتم تحميل الردود المحفوظة:", err);
