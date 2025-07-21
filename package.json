@@ -8,7 +8,7 @@
     "start": "node chatbot.js"
   },
   "dependencies": {
-    "node-fetch": "^3.3.0"           
+    "undici": "^6.6.1"         
   },
   "keywords": ["chatbot", "netlify", "openai", "arabic", "health"],
   "author": "Mona Nashaat",
