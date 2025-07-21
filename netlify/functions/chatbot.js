@@ -1,5 +1,18 @@
-import fetch from "node-fetch";
-import responses from "./qa_responses.json"; // تأكد أن qa_responses.json بجوار هذا الملف
+import { fetch } from "undici";
+import fs from "fs";
+import path from "path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const dataPath = path.resolve(__dirname, "qa_responses.json");
+
+// تحميل الردود المحفوظة مرة واحدة عند بداية التشغيل
+let qaData = {};
+try {
+  const rawData = fs.readFileSync(dataPath, "utf-8");
+  qaData = JSON.parse(rawData);
+} catch (err) {
+  console.error("❌ لم يتم تحميل الردود المحفوظة:", err);
+}
 
 export async function handler(event) {
   if (event.httpMethod !== "POST") {
@@ -10,8 +23,7 @@ export async function handler(event) {
   }
 
   try {
-    const { question, type } = JSON.parse(event.body || "{}");
-
+    const { question, type } = JSON.parse(event.body);
     if (!question) {
       return {
         statusCode: 400,
@@ -19,18 +31,24 @@ export async function handler(event) {
       };
     }
 
-    // في حالة نوع السؤال هو suggestion
+    // 1. الرد المحفوظ إذا كان موجودًا
+    const normalized = question.trim().replace(/[؟?.!]/g, "");
+    const storedAnswer = qaData[normalized];
+    if (storedAnswer) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ answer: storedAnswer }),
+      };
+    }
+
+    // 2. في حالة طلب اقتراحات
     if (type === "suggestion") {
       const suggestionPrompt = `
         المستخدم بدأ يكتب: "${question}".
         اقترح 5 أسئلة طبية كاملة مناسبة تكمل ما بدأ كتابته، بصيغة المستخدم العادي، بدون شرح، فقط قائمة.
-        مثال: 
-        - ما هي أعراض ...
-        - هل يمكن علاج ...
-        - ما الفرق بين ...
       `;
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      const suggestionRes = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
@@ -44,12 +62,11 @@ export async function handler(event) {
         }),
       });
 
-      const data = await response.json();
-      const text = data.choices?.[0]?.message?.content || "";
-      const suggestions = text
-        .split("\n")
-        .filter((line) => line.trim())
-        .map((s) => s.replace(/^- /, "").trim());
+      const suggestionData = await suggestionRes.json();
+      const suggestions = suggestionData.choices?.[0]?.message?.content
+        ?.split("\n")
+        .filter((s) => s.trim())
+        .map((s) => s.replace(/^- /, "").trim()) || [];
 
       return {
         statusCode: 200,
@@ -57,20 +74,8 @@ export async function handler(event) {
       };
     }
 
-    // ✅ التحقق من وجود إجابة محفوظة
-    const trimmedQuestion = question.trim();
-    if (responses[trimmedQuestion]) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ answer: responses[trimmedQuestion] }),
-      };
-    }
-
-    console.log("✅ السؤال المستلم:", trimmedQuestion);
-    console.log("✅ الرد المحفوظ:", responses[trimmedQuestion]);
-    
-    // ❌ لو مش موجود في الردود المحفوظة، استخدم OpenAI API
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    // 3. إذا لم يكن السؤال محفوظًا، يتم إرسال الطلب إلى OpenAI
+    const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
@@ -84,15 +89,15 @@ export async function handler(event) {
       }),
     });
 
-    const data = await response.json();
-    const answer = data.choices[0]?.message?.content || "لم يتم العثور على إجابة.";
-    
+    const gptData = await gptResponse.json();
+    const answer = gptData.choices?.[0]?.message?.content || "❌ لم يتم العثور على إجابة.";
+
     return {
       statusCode: 200,
       body: JSON.stringify({ answer }),
     };
   } catch (error) {
-    console.error("❌ Server Error:", error);
+    console.error("❌ خطأ في الخادم:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: "حدث خطأ داخلي في الخادم." }),
