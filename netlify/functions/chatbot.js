@@ -2,17 +2,12 @@ import { fetch } from "undici";
 import fs from "fs";
 import path from "path";
 
-// const __dirname = path.dirname(new URL(import.meta.url).pathname);
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const dataPath = new URL("qa_responses.json", import.meta.url);
 
-const dataPath = path.resolve(__dirname, "qa_responses.json");
-
-// تحميل الردود المحفوظة مرة واحدة عند بداية التشغيل
+// تحميل الردود المحفوظة
 let qaData = {};
 try {
-  const rawData = fs.readFileSync(dataPath, "utf-8");
+  const rawData = fs.readFileSync(dataPath, { encoding: "utf-8" });
   qaData = JSON.parse(rawData);
 } catch (err) {
   console.error("❌ لم يتم تحميل الردود المحفوظة:", err);
@@ -35,7 +30,6 @@ export async function handler(event) {
       };
     }
 
-    // 1. الرد المحفوظ إذا كان موجودًا
     const normalized = question.trim().replace(/[؟?.!]/g, "");
     const storedAnswer = qaData[normalized];
     if (storedAnswer) {
@@ -45,7 +39,6 @@ export async function handler(event) {
       };
     }
 
-    // 2. في حالة طلب اقتراحات
     if (type === "suggestion") {
       const suggestionPrompt = `
         المستخدم بدأ يكتب: "${question}".
@@ -78,7 +71,6 @@ export async function handler(event) {
       };
     }
 
-    // 3. إذا لم يكن السؤال محفوظًا، يتم إرسال الطلب إلى OpenAI
     const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
