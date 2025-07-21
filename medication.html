@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💊 جدول تذكير الأدوية</title>
+
+  <!-- Toastify -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      font-family: 'Cairo', sans-serif !important;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #667eea, #764ba2);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 850px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+
+    h1 {
+      color: #5c2d91;
+      margin-bottom: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+    }
+
+    .days {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .days label {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      gap: 4px;
+    }
+
+    .btn {
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      border: none;
+      border-radius: 10px;
+      width: 100%;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    .btn:hover { opacity: 0.9; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .action-btn {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 2px;
+      font-size: 13px;
+    }
+
+    .remove-btn {
+      background-color: #e53935;
+      color: white;
+    }
+
+    .edit-btn {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    #datetime {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; right: 0; bottom: 0; left: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      width: 300px;
+      text-align: center;
+    }
+
+    .modal input, .modal .btn {
+      margin-top: 10px;
+      width: 90%;
+    }
+
+    .doctor-btn {
+      display: inline-block;
+      margin-bottom: 15px;
+      padding: 12px 20px;
+      background: linear-gradient(to right, #23a6d5, #23d5ab);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: 0.3s;
+    }
+
+    .doctor-btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <a href="index.html" class="doctor-btn">🧠 التحدث مع الطبيب الذكي</a>
+
+  <h1>💊 جدول تذكير الأدوية</h1>
+  <div id="datetime">--:--</div>
+
+  <input type="text" id="med-name" placeholder="اسم الدواء" />
+  <input type="time" id="med-time" />
+
+  <div class="days">
+    <label><input type="checkbox" value="0"> الأحد</label>
+    <label><input type="checkbox" value="1"> الإثنين</label>
+    <label><input type="checkbox" value="2"> الثلاثاء</label>
+    <label><input type="checkbox" value="3"> الأربعاء</label>
+    <label><input type="checkbox" value="4"> الخميس</label>
+    <label><input type="checkbox" value="5"> الجمعة</label>
+    <label><input type="checkbox" value="6"> السبت</label>
+  </div>
+
+  <button class="btn" onclick="addWeeklyReminders()">إضافة التذكير الأسبوعي</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>اسم الدواء</th>
+        <th>اليوم</th>
+        <th>الوقت</th>
+        <th>الإجراءات</th>
+      </tr>
+    </thead>
+    <tbody id="reminder-list"></tbody>
+  </table>
+
+  <audio id="reminder-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-classic-click-1117.mp3" preload="auto"></audio>
+</div>
+
+<!-- نافذة التعديل -->
+<div class="modal" id="edit-modal">
+  <div class="modal-content">
+    <h4>تعديل التذكير</h4>
+    <input type="text" id="edit-name" placeholder="اسم الدواء">
+    <input type="time" id="edit-time">
+    <button class="btn" onclick="saveEdit()">حفظ التعديل</button>
+  </div>
+</div>
+
+<script>
+  const list = document.getElementById("reminder-list");
+  const sound = document.getElementById("reminder-sound");
+  const datetimeDiv = document.getElementById("datetime");
+
+  const editModal = document.getElementById("edit-modal");
+  const editNameInput = document.getElementById("edit-name");
+  const editTimeInput = document.getElementById("edit-time");
+
+  let editIndex = -1;
+  let reminders = JSON.parse(localStorage.getItem("reminders") || "[]");
+
+  const daysAr = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+
+  function renderReminders() {
+    list.innerHTML = "";
+    reminders.forEach((reminder, index) => {
+      const utcDate = new Date(reminder.datetime);
+      const localDate = new Date(utcDate.getTime() + (utcDate.getTimezoneOffset() * 60000 * -1));
+
+      const dayName = daysAr[localDate.getDay()];
+      let hours = localDate.getHours();
+      const minutes = String(localDate.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'م' : 'ص';
+      hours = hours % 12 || 12;
+      const time = `${hours}:${minutes} ${ampm}`;
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${reminder.name}</td>
+        <td>${dayName}</td>
+        <td>${time}</td>
+        <td>
+          <button class="action-btn edit-btn" onclick="openEdit(${index})">تعديل</button>
+          <button class="action-btn remove-btn" onclick="removeReminder(${index})">حذف</button>
+        </td>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function addWeeklyReminders() {
+    const name = document.getElementById("med-name").value.trim();
+    const time = document.getElementById("med-time").value;
+    const days = [...document.querySelectorAll('.days input:checked')].map(i => parseInt(i.value));
+
+    if (!name || !time || days.length === 0) {
+      alert("يرجى إدخال اسم الدواء واختيار الوقت والأيام.");
+      return;
+    }
+
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+
+    days.forEach(dayIndex => {
+      const targetDate = new Date(startOfWeek);
+      targetDate.setDate(startOfWeek.getDate() + dayIndex);
+      const [hh, mm] = time.split(":");
+      targetDate.setHours(hh, mm, 0, 0);
+      const iso = targetDate.toISOString().slice(0, 16);
+
+      if (!reminders.some(r => r.datetime === iso && r.name === name)) {
+        reminders.push({ name, datetime: iso });
+      }
+    });
+
+    localStorage.setItem("reminders", JSON.stringify(reminders));
+    renderReminders();
+
+    document.getElementById("med-name").value = "";
+    document.getElementById("med-time").value = "";
+    document.querySelectorAll('.days input:checked').forEach(cb => cb.checked = false);
+  }
+
+  function removeReminder(index) {
+    reminders.splice(index, 1);
+    localStorage.setItem("reminders", JSON.stringify(reminders));
+    renderReminders();
+  }
+
+  function openEdit(index) {
+    editIndex = index;
+    editNameInput.value = reminders[index].name;
+    const date = new Date(reminders[index].datetime);
+    const hh = String(date.getHours()).padStart(2, '0');
+    const mm = String(date.getMinutes()).padStart(2, '0');
+    editTimeInput.value = `${hh}:${mm}`;
+    editModal.style.display = "flex";
+  }
+
+  function saveEdit() {
+    const newName = editNameInput.value.trim();
+    const newTime = editTimeInput.value;
+    if (!newName || !newTime) {
+      alert("يرجى إدخال اسم ووقت.");
+      return;
+    }
+    const oldDate = new Date(reminders[editIndex].datetime);
+    const [hh, mm] = newTime.split(":");
+    oldDate.setHours(hh, mm, 0, 0);
+    reminders[editIndex] = { name: newName, datetime: oldDate.toISOString().slice(0, 16) };
+    localStorage.setItem("reminders", JSON.stringify(reminders));
+    renderReminders();
+    editModal.style.display = "none";
+  }
+
+  window.onclick = (e) => {
+    if (e.target === editModal) editModal.style.display = "none";
+  }
+
+  function showToast(msg) {
+    Toastify({
+      text: msg,
+      duration: 5000,
+      close: true,
+      gravity: "top",
+      position: "right",
+      backgroundColor: "linear-gradient(to right, #667eea, #764ba2)",
+      rtl: true
+    }).showToast();
+
+    sound.play().catch(() => {});
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("💊 تذكير الدواء", {
+        body: msg,
+        icon: "https://img.icons8.com/fluency/48/pill.png"
+      });
+    }
+  }
+
+  function checkReminders() {
+    const now = new Date();
+    const nowISO = now.toISOString().slice(0, 16);
+    const nowMs = new Date(nowISO).getTime();
+    let changed = false;
+
+    reminders = reminders.filter(r => {
+      const reminderMs = new Date(r.datetime).getTime();
+      if (Math.abs(reminderMs - nowMs) < 60000) {
+        showToast(`💊 ${r.name} - حان وقت تناول الدواء`);
+        changed = true;
+        return false;
+      }
+      return true;
+    });
+
+    if (changed) {
+      localStorage.setItem("reminders", JSON.stringify(reminders));
+      renderReminders();
+    }
+
+    const dateStr = now.toLocaleDateString("ar-EG", {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const timeStr = now.toLocaleTimeString("ar-EG", {
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+    datetimeDiv.textContent = `${dateStr} - ${timeStr}`;
+  }
+
+  if ("Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+
+  renderReminders();
+  setInterval(checkReminders, 1000);
+</script>
+
+</body>
+</html>

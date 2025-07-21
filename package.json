@@ -1,0 +1,16 @@
+{
+  "name": "chatbot-app",
+  "type": "module",                  
+  "version": "1.0.0",
+  "description": "Arabic health chatbot using OpenAI and Netlify functions",
+  "main": "chatbot.js",
+  "scripts": {
+    "start": "node chatbot.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.0"           
+  },
+  "keywords": ["chatbot", "netlify", "openai", "arabic", "health"],
+  "author": "Mona Nashaat",
+  "license": "MIT"
+}

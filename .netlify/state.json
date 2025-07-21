@@ -1,0 +1,19 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Damietta",
+			"country": {
+				"code": "EG",
+				"name": "Egypt"
+			},
+			"subdivision": {
+				"code": "DT",
+				"name": "Damietta Governorate"
+			},
+			"timezone": "Africa/Cairo",
+			"latitude": 31.4166,
+			"longitude": 31.8105
+		},
+		"timestamp": 1752351345848
+	}
+}
