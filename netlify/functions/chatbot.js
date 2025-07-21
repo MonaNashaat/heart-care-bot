@@ -66,6 +66,9 @@ export async function handler(event) {
       };
     }
 
+    console.log("✅ السؤال المستلم:", trimmedQuestion);
+    console.log("✅ الرد المحفوظ:", responses[trimmedQuestion]);
+    
     // ❌ لو مش موجود في الردود المحفوظة، استخدم OpenAI API
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -82,8 +85,8 @@ export async function handler(event) {
     });
 
     const data = await response.json();
-    const answer = data.choices[0]?.message?.content || "❌ لم يتم العثور على إجابة.";
-
+    const answer = data.choices[0]?.message?.content || "لم يتم العثور على إجابة.";
+    
     return {
       statusCode: 200,
       body: JSON.stringify({ answer }),
