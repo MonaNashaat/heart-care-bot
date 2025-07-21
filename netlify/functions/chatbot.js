@@ -20,7 +20,7 @@ export async function handler(event) {
     }
 
     // تحقق من الردود المحفوظة
-    const normalized = question.trim().replace(/[؟?.!]/g, "");
+    const normalized = question.trim().replace(/[?.!]/g, "");
     const storedAnswer = qaData[normalized];
     if (storedAnswer) {
       return {
