@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import responses from "./qa_responses.json"; // تأكد أن qa_responses.json بجوار هذا الملف
 
 export async function handler(event) {
   if (event.httpMethod !== "POST") {
@@ -9,7 +10,7 @@ export async function handler(event) {
   }
 
   try {
-    const { question, type } = JSON.parse(event.body);
+    const { question, type } = JSON.parse(event.body || "{}");
 
     if (!question) {
       return {
@@ -18,6 +19,7 @@ export async function handler(event) {
       };
     }
 
+    // في حالة نوع السؤال هو suggestion
     if (type === "suggestion") {
       const suggestionPrompt = `
         المستخدم بدأ يكتب: "${question}".
@@ -55,6 +57,16 @@ export async function handler(event) {
       };
     }
 
+    // ✅ التحقق من وجود إجابة محفوظة
+    const trimmedQuestion = question.trim();
+    if (responses[trimmedQuestion]) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ answer: responses[trimmedQuestion] }),
+      };
+    }
+
+    // ❌ لو مش موجود في الردود المحفوظة، استخدم OpenAI API
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -70,7 +82,6 @@ export async function handler(event) {
     });
 
     const data = await response.json();
-    console.log("Response from OpenAI:", data);
     const answer = data.choices[0]?.message?.content || "❌ لم يتم العثور على إجابة.";
 
     return {
