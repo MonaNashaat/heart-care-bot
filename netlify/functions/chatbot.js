@@ -1,4 +1,14 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { fetch } from "undici";
+
+// تحديد المسار الحالي للملف
+const filename_ = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(filename_);
+
+// تعديل المسار للملف JSON
+const dataPath = path.join(__dirname, "qa_responses.json");  // ✔️ Use path.join here
 import qaData from "./qa_responses.json" assert { type: "json" };
 
 export async function handler(event) {
@@ -11,7 +21,6 @@ export async function handler(event) {
 
   try {
     const { question, type } = JSON.parse(event.body);
-
     if (!question) {
       return {
         statusCode: 400,
@@ -19,8 +28,7 @@ export async function handler(event) {
       };
     }
 
-    // تحقق من الردود المحفوظة
-    const normalized = question.trim().replace(/[?.!]/g, "");
+    const normalized = question.trim().replace(/[؟?.!]/g, "");
     const storedAnswer = qaData[normalized];
     if (storedAnswer) {
       return {
@@ -29,9 +37,8 @@ export async function handler(event) {
       };
     }
 
-    // اقتراحات الأسئلة
     if (type === "suggestion") {
-      const prompt = `
+      const suggestionPrompt = `
         المستخدم بدأ يكتب: "${question}".
         اقترح 5 أسئلة طبية كاملة مناسبة تكمل ما بدأ كتابته، بصيغة المستخدم العادي، بدون شرح، فقط قائمة.
       `;
@@ -44,7 +51,7 @@ export async function handler(event) {
         },
         body: JSON.stringify({
           model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: prompt }],
+          messages: [{ role: "user", content: suggestionPrompt }],
           max_tokens: 150,
           temperature: 0.5,
         }),
@@ -62,7 +69,6 @@ export async function handler(event) {
       };
     }
 
-    // رد من OpenAI إن لم يكن محفوظًا
     const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
