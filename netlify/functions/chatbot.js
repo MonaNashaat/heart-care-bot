@@ -2,7 +2,11 @@ import { fetch } from "undici";
 import fs from "fs";
 import path from "path";
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+// const __dirname = path.dirname(new URL(import.meta.url).pathname);
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const dataPath = path.resolve(__dirname, "qa_responses.json");
 
 // تحميل الردود المحفوظة مرة واحدة عند بداية التشغيل
