@@ -9,14 +9,7 @@ const __dirname = path.dirname(__filename);
 
 // تعديل المسار للملف JSON
 const dataPath = path.join(__dirname, "qa_responses.json");  // ✔️ Use path.join here
-
-let qaData = {};
-try {
-  const rawData = fs.readFileSync(dataPath, "utf-8");
-  qaData = JSON.parse(rawData);
-} catch (err) {
-  console.error("❌ لم يتم تحميل الردود المحفوظة:", err);
-}
+import qaData from "./qa_responses.json" assert { type: "json" };
 
 export async function handler(event) {
   if (event.httpMethod !== "POST") {
